@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NotaService } from '../services/nota.service';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -8,64 +8,91 @@ import { EstudianteService } from '../services/estudiante.service';
 import { Profesor } from '../model/profesor.interface';
 import { Estudiante } from '../model/estudiante.interface';
 
+/**
+ * Componente para listar las notas.
+ * Permite visualizar, eliminar y gestionar notas de estudiantes y profesores.
+ */
 @Component({
-  selector: 'app-nota-list',
-  standalone: true,
-  imports: [DatePipe, RouterModule],
-  templateUrl: './nota-list.component.html',
-  styleUrl: './nota-list.component.css'
+  selector: 'app-nota-list', // Selector del componente
+  standalone: true, // Indica que este componente es autónomo
+  imports: [DatePipe, RouterModule], // Importaciones necesarias
+  templateUrl: './nota-list.component.html', // Ruta del archivo de plantilla
+  styleUrl: './nota-list.component.css' // Ruta del archivo de estilos
 })
-export default class NotaListComponent {
+export default class NotaListComponent implements OnInit {
+  
+  // Inyección de servicios
   private notaServ = inject(NotaService);
   private profesorServ = inject(ProfesorService);
   private estudianteServ = inject(EstudianteService);
-  lstnotas: Nota []= [];
-  lstprofesMap: Map<number,Profesor>=new Map<number,Profesor>();
-  lstestMap: Map<number,Estudiante>=new Map<number,Estudiante>();
 
-  ngOnInit(): void{
+  // Listas para almacenar notas, profesores y estudiantes
+  lstnotas: Nota[] = [];
+  lstprofesMap: Map<number, Profesor> = new Map<number, Profesor>();
+  lstestMap: Map<number, Estudiante> = new Map<number, Estudiante>();
+
+  /**
+   * Método de ciclo de vida que se ejecuta al inicializar el componente.
+   * Carga todas las notas, profesores y estudiantes.
+   */
+  ngOnInit(): void {
     this.loadAll();        // Cargar las notas
     this.loadProfesores(); // Cargar los profesores
-    this.loadEstudiantes();// Cargar los estudiantes
+    this.loadEstudiantes(); // Cargar los estudiantes
   }
 
-  loadAll(){
-    this.notaServ.list().subscribe(notas =>{
-      this.lstnotas=notas;
-    })
+  /**
+   * Método para cargar todas las notas.
+   * Se suscribe al servicio de notas y almacena el resultado.
+   */
+  loadAll() {
+    this.notaServ.list().subscribe(notas => {
+      this.lstnotas = notas; // Almacena las notas en la lista
+    });
   }
 
-  loadProfesores(){
+  /**
+   * Método para cargar la lista de profesores.
+   * Se suscribe al servicio de profesores y almacena el resultado en un mapa.
+   */
+  loadProfesores() {
     this.profesorServ.list().subscribe(profesores => {
       this.lstprofesMap = new Map<number, Profesor>();
       
       profesores.forEach(profesor => {
-        this.lstprofesMap.set(profesor.id, profesor);
-        
+        this.lstprofesMap.set(profesor.id, profesor); // Agrega cada profesor al mapa
       });
     });
   }
 
-  loadEstudiantes(){
+  /**
+   * Método para cargar la lista de estudiantes.
+   * Se suscribe al servicio de estudiantes y almacena el resultado en un mapa.
+   */
+  loadEstudiantes() {
     this.estudianteServ.list().subscribe(estudiantes => {
       this.lstestMap = new Map<number, Estudiante>();
       
       estudiantes.forEach(estudiante => {
-        this.lstestMap.set(estudiante.id, estudiante);
+        this.lstestMap.set(estudiante.id, estudiante); // Agrega cada estudiante al mapa
       });
     });
   }
 
-  deleteNota(nota:Nota){
+  /**
+   * Método para eliminar una nota.
+   * Solicita confirmación al usuario antes de eliminar.
+   * Si se confirma, se llama al servicio para eliminar la nota.
+   */
+  deleteNota(nota: Nota) {
     const confirmacion = window.confirm('¿Está seguro que desea eliminar el registro?');
-    if(confirmacion){
-      this.notaServ.delete(nota.id).subscribe(()=>{
-        console.log('ok');
-        this.loadAll();
-      })
+    if (confirmacion) {
+      this.notaServ.delete(nota.id).subscribe(() => {
+        console.log('ok'); // Mensaje de confirmación en la consola
+        this.loadAll(); // Recargar la lista de notas después de eliminar
+      });
+    } else {
+      console.log('Eliminación cancelada'); // Mensaje de cancelación en la consola
     }
-    else {
-      console.log('Eliminación cancelada');
-    }
-    }
+  }
 }
