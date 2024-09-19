@@ -4,37 +4,57 @@ import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Estudiante } from '../model/estudiante.interface';
 
+/**
+ * Componente para listar estudiantes.
+ * Permite visualizar y eliminar estudiantes de la lista.
+ */
 @Component({
-  selector: 'app-estudiante-list',
-  standalone: true,
-  imports: [DatePipe, RouterModule],
-  templateUrl: './estudiante-list.component.html',
-  styleUrl: './estudiante-list.component.css'
+  selector: 'app-estudiante-list', // Selector del componente
+  standalone: true, // Indica que este componente es autónomo
+  imports: [DatePipe, RouterModule], // Importaciones necesarias para formato de fecha y enrutamiento
+  templateUrl: './estudiante-list.component.html', // Ruta del archivo de plantilla
+  styleUrl: './estudiante-list.component.css' // Ruta del archivo de estilos
 })
 export default class EstudianteListComponent {
+  // Inyección de servicio para manejar operaciones con estudiantes
   private estudianteService = inject(EstudianteService);
-  lstestudiantes: Estudiante []= [];
+  
+  // Lista de estudiantes
+  lstestudiantes: Estudiante[] = [];
 
-  ngOnInit(): void{
-    this.loadAll();
+  /**
+   * Método de ciclo de vida que se ejecuta al inicializar el componente.
+   * Carga todos los estudiantes al iniciar la vista.
+   */
+  ngOnInit(): void {
+    this.loadAll(); // Llama al método para cargar todos los estudiantes
   }
 
-  loadAll(){
-    this.estudianteService.list().subscribe(estudiantes =>{
-      this.lstestudiantes=estudiantes;
-    })
+  /**
+   * Método para cargar la lista de estudiantes.
+   * Se suscribe al servicio para obtener la lista de estudiantes y actualizar la propiedad.
+   */
+  loadAll() {
+    this.estudianteService.list().subscribe(estudiantes => {
+      this.lstestudiantes = estudiantes; // Actualiza la lista de estudiantes
+    });
   }
 
-  deleteEstudiante(estudiante:Estudiante){
-  const confirmacion = window.confirm('¿Está seguro que desea eliminar el registro?');
-  if(confirmacion){
-    this.estudianteService.delete(estudiante.id).subscribe(()=>{
-      console.log('ok');
-      this.loadAll();
-    })
-  }
-  else {
-    console.log('Eliminación cancelada');
-  }
+  /**
+   * Método para eliminar un estudiante.
+   * Muestra una confirmación antes de proceder con la eliminación.
+   * @param estudiante - Estudiante a eliminar.
+   */
+  deleteEstudiante(estudiante: Estudiante) {
+    const confirmacion = window.confirm('¿Está seguro que desea eliminar el registro?'); // Solicita confirmación
+    if (confirmacion) {
+      // Si se confirma, se llama al servicio para eliminar el estudiante
+      this.estudianteService.delete(estudiante.id).subscribe(() => {
+        console.log('ok'); // Mensaje de éxito
+        this.loadAll(); // Recarga la lista de estudiantes
+      });
+    } else {
+      console.log('Eliminación cancelada'); // Mensaje de cancelación
+    }
   }
 }
