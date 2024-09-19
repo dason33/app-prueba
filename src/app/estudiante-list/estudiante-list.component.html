@@ -1,0 +1,30 @@
+<div class="container mt-2">
+  <h1 style="padding-top:5%;">Listado Estudiantes</h1>
+  <a href="/formest" class="btn btn-outline-primary" style="float: right;">Crear estudiante</a>
+<table class="table">
+	<thead>
+		<tr>
+			<th>id</th>
+			<th>nombre</th>
+			<th style="width:10%">acciones</th>
+		</tr>
+	</thead>
+	<tbody>
+        @for (estudiante of lstestudiantes; track estudiante.id) {
+            <tr>
+                <td>{{estudiante.id}}</td>
+                <td>{{estudiante.nombre}}</td>
+                <td style="display:flex;justify-content: space-evenly;">
+                <a href="/formest/{{estudiante.id}}" class="btn btn-outline-secondary" title="editar">
+                    <i class="bi bi-pencil-fill"></i>
+                </a>
+                <button class="btn btn-outline-danger" (click)="deleteEstudiante(estudiante)" title="eliminar">
+                    <i class="bi bi-trash3-fill" ></i>
+                </button>
+                </td>
+            </tr>    
+        }
+		
+	</tbody>
+</table>
+</div>

@@ -1,0 +1,30 @@
+<div class="container mt-2">
+    <h1 style="padding-top:5%;">Listado Profesores</h1>
+    <a href="/formteach" class="btn btn-outline-primary" style="float: right;">Crear profesor</a>
+  <table class="table">
+      <thead>
+          <tr>
+              <th>id</th>
+              <th>nombre</th>
+              <th style="width:10%">acciones</th>
+          </tr>
+      </thead>
+      <tbody>
+          @for (profesor of lstprofesores; track profesor.id) {
+              <tr>
+                  <td>{{profesor.id}}</td>
+                  <td>{{profesor.nombre}}</td>
+                  <td style="display:flex;justify-content: space-evenly;">
+                  <a href="/formteach/{{profesor.id}}" class="btn btn-outline-secondary" title="editar">
+                      <i class="bi bi-pencil-fill"></i>
+                  </a>
+                  <button class="btn btn-outline-danger" (click)="deleteProfesor(profesor)" title="eliminar">
+                      <i class="bi bi-trash3-fill" ></i>
+                  </button>
+                  </td>
+              </tr>    
+          }
+          
+      </tbody>
+  </table>
+  </div>

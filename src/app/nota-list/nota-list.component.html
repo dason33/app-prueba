@@ -1,0 +1,36 @@
+<div class="container mt-2">
+    <h1 style="padding-top:5%;">Listado de notas</h1>
+    <a href="/formnota" class="btn btn-outline-primary" style="float: right;">Agregar nota</a>
+  <table class="table">
+      <thead>
+          <tr>
+              <th>id</th>
+              <th>nombre</th>
+              <th>estudiante</th>
+              <th>profesor</th>
+              <th>valor</th>
+              <th style="width:10%">acciones</th>
+          </tr>
+      </thead>
+      <tbody>
+          @for (nota of lstnotas; track nota.id) {
+              <tr>
+                  <td>{{nota.id}}</td>
+                  <td>{{nota.nombre}}</td>
+                  <td>{{ lstestMap.get(+nota.estudiante)?.nombre || 'Desconocido' }}</td>
+                  <td>{{ lstprofesMap.get(+nota.profesor)?.nombre || 'Desconocido' }}</td>
+                  <td>{{nota.valor}}</td>
+                  <td style="display:flex;justify-content: space-evenly;">
+                  <a href="/formnota/{{nota.id}}" class="btn btn-outline-secondary" title="editar">
+                      <i class="bi bi-pencil-fill"></i>
+                  </a>
+                  <button class="btn btn-outline-danger" (click)="deleteNota(nota)" title="eliminar">
+                      <i class="bi bi-trash3-fill" ></i>
+                  </button>
+                  </td>
+              </tr>    
+          }
+          
+      </tbody>
+  </table>
+  </div>

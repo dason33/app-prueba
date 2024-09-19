@@ -1,0 +1,32 @@
+@if(form){
+    <form class="container border col-sm-6" [formGroup]="form" (ngSubmit)="save()" method="post">
+        <h1>
+            @if(teacher){
+                Actualizar
+            }@else{
+                Crear nuevo   
+            }
+            registro de profesor
+        </h1>
+        <div class="form-group">
+            <label for="nombre" class="col-sm-2 col-form-label">Nombre:</label>
+            <div>
+                <input id="nombre" type="text" class="form-control" placeholder="name" formControlName="nombre" />
+            </div>
+        </div>
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary">
+                @if(teacher){
+                    Actualizar
+                }@else{
+                    Guardar  
+                }
+            </button>
+            <a href="/profesores" class="btn btn-warning" style="float: right;">Volver</a>
+        </div>
+    
+    
+        <input type="hidden" />
+    </form>
+    
+}
