@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Profesor } from '../model/profesor.interface';
 import { ProfesorService } from '../services/profesor.service';
+import { CommonModule } from '@angular/common';
 
 /**
  * Componente para el formulario de profesores.
@@ -11,7 +12,7 @@ import { ProfesorService } from '../services/profesor.service';
 @Component({
   selector: 'app-profesor-form', // Selector del componente
   standalone: true, // Indica que este componente es autónomo
-  imports: [RouterModule, ReactiveFormsModule], // Importaciones necesarias
+  imports: [RouterModule, ReactiveFormsModule, CommonModule], // Importaciones necesarias
   templateUrl: './profesor-form.component.html', // Ruta del archivo de plantilla
   styleUrl: './profesor-form.component.css' // Ruta del archivo de estilos
 })
@@ -25,6 +26,8 @@ export default class ProfesorFormComponent implements OnInit {
 
   form?: FormGroup; // Formulario reactivo
   teacher?: Profesor; // Información del profesor
+  successMessage: boolean = false;
+  successText: string='';
 
   /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
@@ -37,13 +40,13 @@ export default class ProfesorFormComponent implements OnInit {
       this.profesorServ.get(parseInt(id)).subscribe(est => {
         this.teacher = est; // Almacena el profesor
         this.form = this.fb.group({ // Inicializa el formulario con los datos del profesor
-          nombre: [est.nombre, [Validators.required]], // Campo nombre requerido
+          nombre: [est.nombre, [Validators.required, Validators.maxLength(100)]], // Campo nombre requerido
         });
       });        
     } else {
       // Si no hay ID, se crea un nuevo formulario
       this.form = this.fb.group({
-        nombre: ['', [Validators.required]], // Campo nombre requerido
+        nombre: ['', [Validators.required, Validators.maxLength(100)]], // Campo nombre requerido
       });
     }
   }
@@ -53,18 +56,32 @@ export default class ProfesorFormComponent implements OnInit {
    * Si el profesor existe, se actualiza. Si no, se crea uno nuevo.
    */
   save() {
-    const profesorForm = this.form!.value; // Obtener los valores del formulario
-
-    if (this.teacher) {
-      // Actualizar el profesor existente
-      this.profesorServ.update(this.teacher.id, profesorForm).subscribe(() => {
-        this.router.navigate(['/profesores']); // Redirigir a la lista de profesores
-      });
-    } else {
-      // Crear un nuevo profesor
-      this.profesorServ.create(profesorForm).subscribe(() => {
-        this.router.navigate(['/profesores']); // Redirigir a la lista de profesores
-      });
+    if(this.form?.valid){
+      const profesorForm = this.form!.value; // Obtener los valores del formulario
+  
+      if (this.teacher) {
+        // Actualizar el profesor existente
+        this.profesorServ.update(this.teacher.id, profesorForm).subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido actualizado exitosamente.';  // Asignamos el mensaje de guardado
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/profesores']); // Redirigir a la lista de profesores
+          }, 3000);
+        });
+      } else {
+        // Crear un nuevo profesor
+        this.profesorServ.create(profesorForm).subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido guardado exitosamente.';  // Asignamos el mensaje de guardado
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/profesores']); // Redirigir a la lista de profesores
+          }, 3000);
+        });
+      }
+    }else{
+      this.form?.markAllAsTouched();
     }
   }
 }

@@ -1,15 +1,20 @@
 <div class="container mt-2">
     <h1 style="padding-top:5%;">Listado de notas</h1>
-    <a href="/formnota" class="btn btn-outline-primary" style="float: right;">Agregar nota</a>
+    <div style="display: block;">
+        <a href="/formnota" class="btn btn-outline-primary" style="float: right;">Agregar nota</a>
+          <div *ngIf="successMessage" class="alert alert-danger mt-3">
+              {{successText}}
+          </div>
+      </div>
   <table class="table">
       <thead>
           <tr>
-              <th>id</th>
-              <th>nombre</th>
-              <th>estudiante</th>
-              <th>profesor</th>
-              <th>valor</th>
-              <th style="width:10%">acciones</th>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Estudiante</th>
+              <th>Profesor</th>
+              <th>Valor</th>
+              <th style="width:10%">Acciones</th>
           </tr>
       </thead>
       <tbody>
@@ -19,7 +24,7 @@
                   <td>{{nota.nombre}}</td>
                   <td>{{ lstestMap.get(+nota.estudiante)?.nombre || 'Desconocido' }}</td>
                   <td>{{ lstprofesMap.get(+nota.profesor)?.nombre || 'Desconocido' }}</td>
-                  <td>{{nota.valor}}</td>
+                  <td>{{ nota.valor | number:'1.2-2' }}</td>
                   <td style="display:flex;justify-content: space-evenly;">
                   <a href="/formnota/{{nota.id}}" class="btn btn-outline-secondary" title="editar">
                       <i class="bi bi-pencil-fill"></i>

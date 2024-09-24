@@ -12,12 +12,16 @@
             <label for="nombre" class="col-sm-2 col-form-label">Nombre:</label>
             <div>
                 <input id="nombre" type="text" class="form-control" placeholder="name" formControlName="nombre" />
+                    <div *ngIf="form?.get('nombre')?.invalid && form?.get('nombre')?.touched" class="text-danger">
+                        <small *ngIf="form?.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+                        <small *ngIf="form?.get('nombre')?.errors?.['maxlength']">El nombre no debe superar los 100 caracteres.</small>
+                    </div>
             </div>
             <label for="estudiante" class="col-sm-2 col-form-label">Estudiante:</label>
             <div>
                 <select id="estudiante" class="form-control" formControlName="estudiante">
                     <option *ngFor="let estudiante of estudiantesArray" [value]="estudiante.id">
-                        {{ estudiante.nombre }}
+                        {{estudiante.id+"-"+estudiante.nombre }}
                     </option>
                 </select>
             </div>
@@ -25,13 +29,18 @@
             <div>
                 <select id="profesor" class="form-control" formControlName="profesor">
                     <option *ngFor="let profesor of profesoresArray" [value]="profesor.id">
-                        {{ profesor.nombre }}
+                        {{ profesor.id+"-"+profesor.nombre }}
                     </option>
                 </select>
             </div>
             <label for="valor" class="col-sm-2 col-form-label">Valor:</label>
             <div>
-                <input id="valor" type="text" class="form-control" placeholder="value" formControlName="valor" />
+                <input id="valor" type="number" class="form-control" placeholder="value" formControlName="valor" />
+                <div *ngIf="form?.get('valor')?.invalid && form?.get('valor')?.touched" class="text-danger">
+                    <small *ngIf="form?.get('valor')?.errors?.['required']">La nota es obligatorio.</small>
+                    <small *ngIf="form?.get('valor')?.errors?.['min']">La nota no debe ser menor a 0.0.</small>
+                    <small *ngIf="form?.get('valor')?.errors?.['max']">La nota no debe ser mayor a 5.0.</small>
+                </div>
             </div>
         </div>
         <div class="mt-2">
@@ -44,9 +53,9 @@
             </button>
             <a href="/notas" class="btn btn-warning" style="float: right;">Volver</a>
         </div>
-    
-    
-        <input type="hidden" />
+        <div *ngIf="successMessage" class="alert alert-success mt-3">
+            {{successText}}
+        </div>
     </form>
     
 }

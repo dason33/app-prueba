@@ -37,6 +37,8 @@ export default class NotaFormComponent implements OnInit {
   // Arrays para almacenar los datos de estudiantes y profesores
   estudiantesArray: Estudiante[] = [];
   profesoresArray: Profesor[] = [];
+  successMessage: boolean = false;
+  successText: string='';
 
   // Formulario y nota
   form?: FormGroup;
@@ -56,19 +58,19 @@ export default class NotaFormComponent implements OnInit {
       this.notaServ.get(parseInt(id)).subscribe(nota => {
         this.note = nota;
         this.form = this.fb.group({
-          nombre: [nota.nombre, [Validators.required]], // Control para el nombre
+          nombre: [nota.nombre, [Validators.required, Validators.maxLength(100)]], // Control para el nombre
           estudiante: [nota.estudiante, [Validators.required]], // Control para el estudiante
           profesor: [nota.profesor, [Validators.required]], // Control para el profesor
-          valor: [nota.valor, [Validators.required]], // Control para el valor
+          valor: [nota.valor, [Validators.required, Validators.min(0), Validators.max(5)]], // Control para el valor
         });
       });
     } else {
       // Si no hay ID, se crea un nuevo formulario
       this.form = this.fb.group({
-        nombre: ['', [Validators.required]], // Control para el nombre
+        nombre: ['', [Validators.required, Validators.maxLength(100)]], // Control para el nombre
         estudiante: ['', [Validators.required]], // Control para el estudiante
         profesor: ['', [Validators.required]], // Control para el profesor
-        valor: ['', [Validators.required]], // Control para el valor
+        valor: ['', [Validators.required, Validators.min(0), Validators.max(5)]], // Control para el valor
       });
     }
   }
@@ -106,18 +108,32 @@ export default class NotaFormComponent implements OnInit {
    * Si existe, se actualiza; si no, se crea una nueva.
    */
   save() {
-    const notaForm = this.form!.value; // Obtiene los valores del formulario
-
-    if (this.note) {
-      // Si existe la nota, se actualiza
-      this.notaServ.update(this.note.id, notaForm).subscribe(() => {
-        this.router.navigate(['/notas']); // Redirige a la lista de notas
-      });
-    } else {
-      // Si no existe, se crea una nueva nota
-      this.notaServ.create(notaForm).subscribe(() => {
-        this.router.navigate(['/notas']); // Redirige a la lista de notas
-      });
+    if(this.form?.valid){
+      const notaForm = this.form!.value; // Obtiene los valores del formulario
+  
+      if (this.note) {
+        // Si existe la nota, se actualiza
+        this.notaServ.update(this.note.id, notaForm).subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido actualizado exitosamente.';  // Asignamos el mensaje de actualización
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/notas']); // Redirige a la lista de notas
+          }, 3000);
+        });
+      } else {
+        // Si no existe, se crea una nueva nota
+        this.notaServ.create(notaForm).subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido guardado exitosamente.';  // Asignamos el mensaje de guardado
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/notas']); // Redirige a la lista de notas
+          }, 3000);
+        });
+      }
+    }else{
+      this.form?.markAllAsTouched();
     }
   }
 }

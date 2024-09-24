@@ -7,6 +7,7 @@ import { ProfesorService } from '../services/profesor.service';
 import { EstudianteService } from '../services/estudiante.service';
 import { Profesor } from '../model/profesor.interface';
 import { Estudiante } from '../model/estudiante.interface';
+import { CommonModule } from '@angular/common';
 
 /**
  * Componente para listar las notas.
@@ -15,7 +16,7 @@ import { Estudiante } from '../model/estudiante.interface';
 @Component({
   selector: 'app-nota-list', // Selector del componente
   standalone: true, // Indica que este componente es autónomo
-  imports: [DatePipe, RouterModule], // Importaciones necesarias
+  imports: [DatePipe, RouterModule, CommonModule], // Importaciones necesarias
   templateUrl: './nota-list.component.html', // Ruta del archivo de plantilla
   styleUrl: './nota-list.component.css' // Ruta del archivo de estilos
 })
@@ -30,6 +31,8 @@ export default class NotaListComponent implements OnInit {
   lstnotas: Nota[] = [];
   lstprofesMap: Map<number, Profesor> = new Map<number, Profesor>();
   lstestMap: Map<number, Estudiante> = new Map<number, Estudiante>();
+  successMessage: boolean = false;
+  successText: string='';
 
   /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
@@ -88,8 +91,14 @@ export default class NotaListComponent implements OnInit {
     const confirmacion = window.confirm('¿Está seguro que desea eliminar el registro?');
     if (confirmacion) {
       this.notaServ.delete(nota.id).subscribe(() => {
-        console.log('ok'); // Mensaje de confirmación en la consola
-        this.loadAll(); // Recargar la lista de notas después de eliminar
+        this.successMessage = true;
+          this.successText = 'El registro ha sido eliminado exitosamente.';  // Asignamos el mensaje de actualización
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.loadAll(); // Recarga la lista de estudiantes
+          }, 3000);
+          this.loadAll(); // Recargar la lista de notas después de eliminar
+          console.log('ok'); // Mensaje de confirmación en la consola
       });
     } else {
       console.log('Eliminación cancelada'); // Mensaje de cancelación en la consola

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EstudianteService } from '../services/estudiante.service';
 import { Estudiante } from '../model/estudiante.interface';
+import { CommonModule } from '@angular/common';
 
 /**
  * Componente para manejar el formulario de estudiantes.
@@ -11,7 +12,7 @@ import { Estudiante } from '../model/estudiante.interface';
 @Component({
   selector: 'app-estudiante-form', // Selector del componente
   standalone: true, // Indica que este componente es autónomo
-  imports: [RouterModule, ReactiveFormsModule], // Importaciones necesarias para el enrutamiento y formularios reactivos
+  imports: [RouterModule, ReactiveFormsModule, CommonModule], // Importaciones necesarias para el enrutamiento y formularios reactivos
   templateUrl: './estudiante-form.component.html', // Ruta del archivo de plantilla
   styleUrl: './estudiante-form.component.css' // Ruta del archivo de estilos
 })
@@ -25,6 +26,8 @@ export default class EstudianteFormComponent implements OnInit {
 
   form?: FormGroup; // Formulario reactivo para el estudiante
   student?: Estudiante; // Estudiante a ser editado (si existe)
+  successMessage: boolean = false;
+  successText: string='';
 
   /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
@@ -37,13 +40,13 @@ export default class EstudianteFormComponent implements OnInit {
         this.estudianteServ.get(parseInt(id)).subscribe(est => {
           this.student = est; // Almacena el estudiante
           this.form = this.fb.group({
-            nombre: [est.nombre, [Validators.required]], // Inicializa el formulario con el nombre del estudiante
+            nombre: [est.nombre, [Validators.required, Validators.maxLength(100)]], // Inicializa el formulario con el nombre del estudiante
           });
         });        
       } else {
         // Si no hay ID, se crea un nuevo formulario
         this.form = this.fb.group({
-          nombre: ['', [Validators.required]], // Inicializa el formulario vacío
+          nombre: ['', [Validators.required, Validators.maxLength(100)]], // Inicializa el formulario vacío
         });
       }
   }
@@ -53,19 +56,34 @@ export default class EstudianteFormComponent implements OnInit {
    * Crea un nuevo estudiante o actualiza uno existente.
    */
   save() {
-    const estudianteForm = this.form!.value; // Obtiene los valores del formulario
+    if(this.form?.valid){
+      const estudianteForm = this.form!.value; // Obtiene los valores del formulario
+  
+      if (this.student) {
+        // Si existe un estudiante, se actualiza
+        this.estudianteServ.update(this.student.id, estudianteForm)
+        .subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido actualizado exitosamente.';  // Asignamos el mensaje de actualización
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/']);// Navega a la ruta principal después de guardar
+          }, 3000);
+        });
+      } else {
+        // Si no existe, se crea un nuevo estudiante
+        this.estudianteServ.create(estudianteForm).subscribe(() => {
+          this.successMessage = true;
+          this.successText = 'El registro ha sido guardado exitosamente.';  // Asignamos el mensaje de guardado
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.router.navigate(['/']);// Navega a la ruta principal después de guardar
+          }, 3000);
+        });
+      }
 
-    if (this.student) {
-      // Si existe un estudiante, se actualiza
-      this.estudianteServ.update(this.student.id, estudianteForm)
-      .subscribe(() => {
-        this.router.navigate(['/']); // Navega a la ruta principal después de guardar
-      });
-    } else {
-      // Si no existe, se crea un nuevo estudiante
-      this.estudianteServ.create(estudianteForm).subscribe(() => {
-        this.router.navigate(['/']); // Navega a la ruta principal después de guardar
-      });
+    }else{
+      this.form?.markAllAsTouched();
     }
   }
 

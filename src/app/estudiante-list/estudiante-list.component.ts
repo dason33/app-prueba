@@ -3,6 +3,7 @@ import { EstudianteService } from '../services/estudiante.service';
 import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Estudiante } from '../model/estudiante.interface';
+import { CommonModule } from '@angular/common';
 
 /**
  * Componente para listar estudiantes.
@@ -11,7 +12,7 @@ import { Estudiante } from '../model/estudiante.interface';
 @Component({
   selector: 'app-estudiante-list', // Selector del componente
   standalone: true, // Indica que este componente es autónomo
-  imports: [DatePipe, RouterModule], // Importaciones necesarias para formato de fecha y enrutamiento
+  imports: [DatePipe, RouterModule, CommonModule], // Importaciones necesarias para formato de fecha y enrutamiento
   templateUrl: './estudiante-list.component.html', // Ruta del archivo de plantilla
   styleUrl: './estudiante-list.component.css' // Ruta del archivo de estilos
 })
@@ -21,6 +22,8 @@ export default class EstudianteListComponent {
   
   // Lista de estudiantes
   lstestudiantes: Estudiante[] = [];
+  successMessage: boolean = false;
+  successText: string='';
 
   /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
@@ -50,8 +53,13 @@ export default class EstudianteListComponent {
     if (confirmacion) {
       // Si se confirma, se llama al servicio para eliminar el estudiante
       this.estudianteService.delete(estudiante.id).subscribe(() => {
+        this.successMessage = true;
+          this.successText = 'El registro ha sido eliminado exitosamente.';  // Asignamos el mensaje de actualización
+          setTimeout(() => {
+            this.successMessage = false; // Ocultar el mensaje después de 3 segundos
+            this.loadAll(); // Recarga la lista de estudiantes
+          }, 3000);
         console.log('ok'); // Mensaje de éxito
-        this.loadAll(); // Recarga la lista de estudiantes
       });
     } else {
       console.log('Eliminación cancelada'); // Mensaje de cancelación

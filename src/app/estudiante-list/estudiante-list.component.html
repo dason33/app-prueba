@@ -1,12 +1,17 @@
 <div class="container mt-2">
   <h1 style="padding-top:5%;">Listado Estudiantes</h1>
-  <a href="/formest" class="btn btn-outline-primary" style="float: right;">Crear estudiante</a>
+    <div style="display: block;">
+      <a href="/formest" class="btn btn-outline-primary" style="float: right;">Crear estudiante</a>
+        <div *ngIf="successMessage" class="alert alert-danger mt-3">
+            {{successText}}
+        </div>
+    </div>
 <table class="table">
 	<thead>
 		<tr>
-			<th>id</th>
-			<th>nombre</th>
-			<th style="width:10%">acciones</th>
+			<th>ID</th>
+			<th>Nombre</th>
+			<th style="width:10%">Acciones</th>
 		</tr>
 	</thead>
 	<tbody>
