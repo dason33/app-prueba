@@ -1,7 +1,7 @@
 export interface Nota {
     id:         number;
     nombre:     string;
-    profesor:   string;
-    estudiante: string;
+    profesor:   number;
+    estudiante: number;
     valor:      number;
 }
