@@ -24,6 +24,9 @@
                         {{estudiante.id+"-"+estudiante.nombre }}
                     </option>
                 </select>
+                <div *ngIf="form?.get('estudiante')?.invalid && form?.get('estudiante')?.touched" class="text-danger">
+                    <small *ngIf="form?.get('estudiante')?.errors?.['required']">El estudiante es obligatorio.</small>
+                </div>
             </div>
             <label for="profesor" class="col-sm-2 col-form-label">Docente:</label>
             <div>
@@ -32,6 +35,9 @@
                         {{ profesor.id+"-"+profesor.nombre }}
                     </option>
                 </select>
+                <div *ngIf="form?.get('profesor')?.invalid && form?.get('profesor')?.touched" class="text-danger">
+                    <small *ngIf="form?.get('profesor')?.errors?.['required']">El profesor es obligatorio.</small>
+                </div>
             </div>
             <label for="valor" class="col-sm-2 col-form-label">Valor:</label>
             <div>
